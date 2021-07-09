@@ -6,7 +6,7 @@ public class Memoizer <T, U> {
 
     private final Map<T, U> cache = new ConcurrentHashMap<>();
 
-    public <T, U> Function<T, U> memoize(Function<T, U> function){
+    public Function<T, U> memoize(Function<T, U> function){
         return new Memoizer<T, U>().doMemoize(function);
     }
 
