@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 public class Memoizer <T, U> {
 
-    // ganz schön viele eckige Klammern hier!
+    // ganz schön viele eckige Klammern hier!!!
     private final Map<T, U> cache = new ConcurrentHashMap<>();
 
     public Function<T, U> memoize(Function<T, U> function){
