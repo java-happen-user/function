@@ -1,3 +1,5 @@
+package de.ausy.bufs.javahappen;
+
 /**
  * 
  */
