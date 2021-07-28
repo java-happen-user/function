@@ -20,6 +20,6 @@ public class Memoizer <T, U> {
     }
 
     private Function<T, U> doMemoize(Function<T, U> function){
-        return input -> cache.computeIfAbsent(input, function::apply);
+        return input -> cache.computeIfAbsent(input, function);
     }
 }
