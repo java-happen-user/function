@@ -1,5 +1,7 @@
 package de.ausy.bufs.javahappen;
 
+import kotlin.Pair;
+
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -12,18 +14,20 @@ public class Rest {
     void x(){
         Function<Integer, Integer> plusEins = x -> x + 1;
 
-        // Stream::map ist ein Beispiel für eine Methode die eine Function aufnimmt
+        // Stream::map ist ein Beispiel für eine Methode, die eine Function aufnimmt
         Function<Integer, String> kundenNamenGeneration = x -> "Kunde" + x;
+        Function<Integer, Pair<Integer,String>> kundenNamenGeneration1
+                = x -> new Pair<>(x, "Kunde" + x);
 
-        // ?
+        // kann auch per Lamda verarbeitet werden
         Consumer<String> printer = x -> System.out.println(x);
 
         // ...
         Predicate<String> aSearcher = x -> x.contains("A");
         Function<String, Boolean> aSearcherAsFunction = x -> x.contains("A");
 
-        List<String> kundenNamen = Stream.of(100).map(kundenNamenGeneration).collect(Collectors.toList());
-        List<String> kundenNamen1 = Stream.of(100).map(x -> "Kunde" + x).collect(Collectors.toList());
+        List<String> kundenNamen  = Stream.of(0, 100).map(kundenNamenGeneration).collect(Collectors.toList());
+        List<String> kundenNamen1 = Stream.of(0, 100).map(x -> "Kunde" + x).collect(Collectors.toList());
 
         Stream.of(100).forEach(x -> System.out.println(x));
     }

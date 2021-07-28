@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,17 +14,17 @@ public class MemoizerTest {
     private final Memoizer<Double, Double> underTest = new Memoizer<>();
 
     @Test
-    public void memoizedFunctionIsFasterForFahrenheitToCelsius() {
+    public void memoizedFunctionIsFasterForFahrenheitToCelsius(){
         // Arrange
         // Fahrenheit ->  Celsius
-        Function<Double, Double> fahrenheitToCelsius
-                = x -> (x - 32) * 5/9;
+        Function<Double, Double> fahrenheitToCelsius1 = x -> (x - 32.0) * 5.0/9.0;
+        Function<Double, Double> fahrenheitToCelsius = x -> fahrenheitToCelsiusLongRunning(x);
         Function<Double, Double> fahrenheitToCelsiusMemoized = underTest.memoize(fahrenheitToCelsius);
 
-        Stream<Double> fahrenheits0 = Stream.iterate(0, n -> n + 1).limit(200000).map(x -> x.doubleValue()/1000);
-        Stream<Double> fahrenheits1 = Stream.iterate(0, n -> n + 1).limit(200000).map(x -> x.doubleValue()/1000);
-        Stream<Double> fahrenheits2 = Stream.iterate(0, n -> n + 1).limit(200000).map(x -> x.doubleValue()/1000);
-        Stream<Double> fahrenheits3 = Stream.iterate(0, n -> n + 1).limit(200000).map(x -> x.doubleValue()/1000);
+        Stream<Double> fahrenheits0 = Stream.iterate(0, n -> n + 1).limit(2000).map(x -> x.doubleValue()/1000);
+        Stream<Double> fahrenheits1 = Stream.iterate(0, n -> n + 1).limit(2000).map(x -> x.doubleValue()/1000);
+        Stream<Double> fahrenheits2 = Stream.iterate(0, n -> n + 1).limit(2000).map(x -> x.doubleValue()/1000);
+        Stream<Double> fahrenheits3 = Stream.iterate(0, n -> n + 1).limit(2000).map(x -> x.doubleValue()/1000);
 
         // Act
         LocalDateTime begin = LocalDateTime.now();
@@ -48,13 +49,16 @@ public class MemoizerTest {
         long firstPure = Duration.between(begin2, end2).getNano();
         long secondPure = Duration.between(begin3, end3).getNano();
 
-        long fasterPercent = 100 * secondMemoized/firstMemoized;
-        long faster = firstMemoized - secondMemoized;
+        System.out.println("the second run of the pure version     runs "     + 100 * secondPure/firstPure + "% (nanos = " + firstPure     + " - " + secondPure     + ")   of the first run");
+        System.out.println("the second run of the memoized version runs "     + 100 * secondMemoized/firstMemoized  + "% (nanos = " + firstMemoized + " - " + secondMemoized + ")       of the first run");
+    }
 
-        long fasterPercent2 = 100 * secondPure/firstPure;
-        long faster2 = firstPure - secondPure;
-
-        System.out.println("the second run of the pure version     is " + fasterPercent2 + "% (" + faster2  + " nanos = " + firstPure     + " - " + secondPure     + ")   faster than the first run");
-        System.out.println("the second run of the memoized version is "     + fasterPercent  + "% (" + faster   + " nanos = " + firstMemoized + " - " + secondMemoized + ") faster than the first run");
+    private Double fahrenheitToCelsiusLongRunning(double x) {
+        try {
+            TimeUnit.MICROSECONDS.sleep(30);
+        }catch (InterruptedException ie){
+            System.out.println("exception");
+        }
+        return (x - 32.0) * 5.0/9.0;
     }
 }
